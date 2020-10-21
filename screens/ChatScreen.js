@@ -7,10 +7,10 @@ import socketIOClient from "socket.io-client";
  
 import {connect} from 'react-redux';
 
-var socket = socketIOClient("http://192.168.1.15:3000");
+var socket = socketIOClient("http://192.168.1.45:3000");
 
 function ChatScreen(props) {
-  
+  console.log("pseudo", props.pseudo);
   const [currentMessage, setCurrentMessage] = useState();
   const [listMessage, setListMessage] = useState([]);
 
@@ -29,6 +29,7 @@ function ChatScreen(props) {
     var msg = msg.replace(/[a-z]*fuck[a-z]*/gi, '\u2022\u2022\u2022');
 
     return <ListItem 
+      key={i}
       title={msg} 
       subtitle={messageData.pseudo}
     />

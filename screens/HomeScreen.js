@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { StyleSheet, ImageBackground } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { AsyncStorage, StyleSheet, ImageBackground, Text } from 'react-native';
 
 import {Button, Input} from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -8,11 +8,27 @@ import {connect} from 'react-redux';
 
 function HomeScreen({ navigation, onSubmitPseudo }) {
     const [pseudo, setPseudo] = useState('');
+    const [isPseudo, setIsPseudo] = useState(false);
     
-    return (
-    <ImageBackground source={require('../assets/home.jpg')} style={styles.container}>
+    useEffect(() => {
 
-        <Input
+      AsyncStorage.getItem("pseudo",
+        function(error, data){
+          if(data != null){
+            setIsPseudo(true)
+            setPseudo(data);
+            onSubmitPseudo(pseudo); // peut foirer à cause de l'asynchronie ?
+          }
+        }
+      )
+    }, [])
+    var welcome; 
+    if(isPseudo){
+      welcome =
+    <Text>Welcome back {pseudo}</Text>
+    } else {
+      welcome =
+      <Input
             containerStyle = {{marginBottom: 25, width: '70%'}}
             inputStyle={{marginLeft: 10}}
             placeholder='John'
@@ -25,6 +41,11 @@ function HomeScreen({ navigation, onSubmitPseudo }) {
             }
             onChangeText={(val) => setPseudo(val)}
         />
+    }
+    return (
+    <ImageBackground source={require('../assets/home.jpg')} style={styles.container}>
+
+        {welcome}
 
         <Button
             icon={
@@ -37,7 +58,13 @@ function HomeScreen({ navigation, onSubmitPseudo }) {
 
             title="Go to Map"
             type="solid"
-            onPress={() => {onSubmitPseudo(pseudo); navigation.navigate('Map')}}
+            onPress={() => {AsyncStorage.setItem("pseudo", pseudo); onSubmitPseudo(pseudo); navigation.navigate('Map')}}
+            buttonStyle={{ marginBottom: 10 }}
+        />
+        <Button
+            title="Clear Storage"
+            type="solid"
+            onPress={() => {AsyncStorage.clear();}}
         />
 
     </ImageBackground>
